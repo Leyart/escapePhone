@@ -2,7 +2,7 @@
   "name": "escapephone",
   "main": "escapephone.js",
   "description": "Listens for GPIO events from a rotatory Phones to provide clues in escape rooms like scenarios",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": { "tts": "./tts.sh",
            "mpc_query": "./mpc_query.sh",
            "refresh_mpd": "./refresh_mpd.sh" },

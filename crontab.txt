@@ -1,1 +1,1 @@
-@reboot /usr/lib/node_modules/escapephone/escapephone.js
+@reboot /usr/local/lib/node_modules/escapephone/escapephone.js
