@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/local/bin/env node
 
 var tts = {};
 
@@ -21,7 +21,7 @@ if (false) {
 
   tts.procs.lame.stdout.on('end', function() {
     tts.procs.play = tts.mods.cp.spawn('mpg123', ['/tmp/utter.mp3']);
-      
+
     tts.procs.play.on('exit', function() {
       process.exit();
     });

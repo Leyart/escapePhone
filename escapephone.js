@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/local/bin/env node
 
 var escapephone = {};
 
@@ -59,11 +59,11 @@ escapephone.dev.hook.on('longpress', function() {
   process.emit('mpc', {cmd:['pause']});
 });
 escapephone.dev.hook.on('buttonpress', function() {
-  process.emit("volume", {volume:100});      
+  process.emit("volume", {volume:100});
 });
 escapephone.dev.hook.on('multipress', function(spec) {
   var vol = 120 - (10*(spec.count));
-  process.emit("volume", {volume:vol});      
+  process.emit("volume", {volume:vol});
 });
 
 escapephone.dev.dial.on('longpress', function() {
@@ -106,13 +106,13 @@ process.on('code', function(spec) {
   }
 
   switch (code) {
-    case '1': 
+    case '1':
       process.emit("mpc", {cmd:'play'});
       escapephone.state.sofar.shift();
       break;
 /*
-    case '2': 
-      process.emit("volume", {volume:100});      
+    case '2':
+      process.emit("volume", {volume:100});
       process.emit("mpc", {cmd:'play'});
       escapephone.state.sofar.shift();
       break;
@@ -123,11 +123,11 @@ process.on('code', function(spec) {
       escapephone.state.sofar.shift();
       break;
 /*
-    case '3': 
+    case '3':
       process.emit("mpc", {cmd:'next'});
       escapephone.state.sofar.shift();
       break;
-    case '4': 
+    case '4':
       process.emit("mpc", {cmd:'prev'});
       escapephone.state.sofar.shift();
       break;
@@ -167,32 +167,32 @@ process.on('code', function(spec) {
       process.emit("mpcq", {query:['lilly']});
       escapephone.state.sofar.shift();
       break;
-    case '-1': 
+    case '-1':
       process.emit('clear_code');
-      process.emit('setmode', {from:escapephone.state.mode, to:'*'});      
+      process.emit('setmode', {from:escapephone.state.mode, to:'*'});
       escapephone.state.sofar.push("*");
       break;
-    case '-2': 
+    case '-2':
       process.emit('clear_code');
-      process.emit('setmode', {from:escapephone.state.mode, to:'#'});      
+      process.emit('setmode', {from:escapephone.state.mode, to:'#'});
       escapephone.state.sofar.push("#");
       break;
-    case '-3': 
-    case '-4': 
-    case '-5': 
-    case '-6': 
-    case '-7': 
-    case '-8': 
+    case '-3':
+    case '-4':
+    case '-5':
+    case '-6':
+    case '-7':
+    case '-8':
     case '-9':
       process.emit('mpc', {cmd:['pause']});
       process.emit('mike', {id:escapephone.state.sofar.pop()});
       process.emit('clear_code');
-      break;      
+      break;
     case '-0':
-      process.emit('setmode', {from:escapephone.state.mode, to:''});      
+      process.emit('setmode', {from:escapephone.state.mode, to:''});
       process.emit('clear_code');
       process.emit('clear_recs');
-      break;      
+      break;
     case "*60":
       process.emit('mpc', {cmd:['single', 'on']});
       process.emit('audible_status');
@@ -250,7 +250,7 @@ process.on('rotary_query', function(spec) {
 
     //process.emit('effect', {name:'uhoh'});
     //process.emit('tts', {text:[lines.length]});
-    
+
   });
 });
 
@@ -268,7 +268,7 @@ process.on('clear_recs', function(spec) {
              '&&',
              'mv',
              [process.env.HOME,'tmp','?.wav'].join('/'),
-             [process.env.HOME,'tmp',timestamp].join('/'),    
+             [process.env.HOME,'tmp',timestamp].join('/'),
              '',
              ].join(' ');
   console.error("TRASH: %s", cmd);
@@ -308,30 +308,30 @@ process.on('newmode', function(spec) {
 process.on('shutdown_request', function() {
   process.emit('mpc', {cmd:['stop']});
   process.emit("tts", {text:['goodbye cruel world']});
-  setInterval(function() { 
+  setInterval(function() {
     var draw = Math.floor(Math.random()*escapephone.closings.length);
-    process.emit("tts", {text:[escapephone.closings[draw]]}); 
+    process.emit("tts", {text:[escapephone.closings[draw]]});
   }, 2500);
   setTimeout(function() {
-    escapephone.mods.cp.exec('shutdown -h now', function(err, stdout, stderr) {    
-      console.error("SHUTDOWN: %j", {err:err,stdout:stdout,stderr:stderr});    
-    });    
+    escapephone.mods.cp.exec('shutdown -h now', function(err, stdout, stderr) {
+      console.error("SHUTDOWN: %j", {err:err,stdout:stdout,stderr:stderr});
+    });
   }, 6000);
 });
 
 process.on('mpc', function(spec) {
-  escapephone.mods.cp.exec(['mpc'].concat(spec.cmd).join(" "), function(err, stdout, stderr) {    
-    console.error("%s: %j", spec.cmd, {err:err,stdout:stdout,stderr:stderr});    
+  escapephone.mods.cp.exec(['mpc'].concat(spec.cmd).join(" "), function(err, stdout, stderr) {
+    console.error("%s: %j", spec.cmd, {err:err,stdout:stdout,stderr:stderr});
   });
 });
 process.on('volume', function(spec) {
-  escapephone.mods.cp.exec(['mpc','volume',spec.volume].join(" "), function(err, stdout, stderr) {    
-    console.error("VOL: %j", {vol:spec.volume,err:err,stdout:stdout,stderr:stderr});    
+  escapephone.mods.cp.exec(['mpc','volume',spec.volume].join(" "), function(err, stdout, stderr) {
+    console.error("VOL: %j", {vol:spec.volume,err:err,stdout:stdout,stderr:stderr});
   });
 });
 
 process.on('tts', function(spec) {
-  var tts = escapephone.mods.cp.spawn('/usr/bin/tts', spec.text);
+  var tts = escapephone.mods.cp.spawn('/usr/local/bin/tts', spec.text);
   tts.stdout.pipe(process.stdout);
   tts.stderr.pipe(process.stderr);
   //tts.stdin.write(spec.text.concat(['\n']).join(" "));;
@@ -397,7 +397,7 @@ process.on('mike', function(spec) {
       process.emit('effect', {name:'tone'});
       delete escapephone.mike;
     });
-     
+
   });
 
   return;
@@ -423,16 +423,16 @@ process.on('mike', function(spec) {
     console.error("DROPMIKE");
     delete escapephone.mike;
   });
-                                            
+
 });
 
 process.on('mpcq', function(spec) {
     //process.emit('tts', {text:spec.query});
-    var mpc = escapephone.mods.cp.exec(['/usr/bin/mpc_query',spec.query.join(".*")].concat([
+    var mpc = escapephone.mods.cp.exec(['/usr/local/bin/mpc_query',spec.query.join(".*")].concat([
       '|',
       'xargs mpc play'
     ]).join(" "), function(err,stdout,stderr) {
-    //console.error("DEMAND: %j", {err:err,stdout:stdout,stderr:stderr});    
+    //console.error("DEMAND: %j", {err:err,stdout:stdout,stderr:stderr});
   });
 });
 

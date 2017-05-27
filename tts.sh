@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/env bash
 
 if [[ -p /dev/stdin || -f /dev/stdin ]]
 then
