@@ -44,11 +44,12 @@ escapephone.effects = {
 escapephone.root = require.resolve('./escapephone.js').split('/').slice(0,-1).join("/");
 
 escapephone.dev = {};
-escapephone.dev.hook = new escapephone.mods.gpiobutton.button({name:'hook', gpiono:22, DOWN:1, interval:20});
+//escapephone.dev.hook = new escapephone.mods.gpiobutton.button({name:'hook', gpiono:22, DOWN:1, interval:20});
 escapephone.dev.dial = new escapephone.mods.gpiobutton.button({name:'dial', gpiono:27, longTimeout: 10000});
 escapephone.dev.rotary = new escapephone.mods.gpiobutton.button({name:'rotary', gpiono:17, interval:20, DOWN:1});
 //escapephone.dev.onoff = new escapephone.mods.gpiobutton.button({name:'switch', gpiono: 18});
 
+/*
 escapephone.dev.hook.on('buttondown', function() {
   process.emit('clear_code');
   if (escapephone.mike) {
@@ -65,6 +66,7 @@ escapephone.dev.hook.on('multipress', function(spec) {
   var vol = 120 - (10*(spec.count));
   process.emit("volume", {volume:vol});
 });
+*/
 
 escapephone.dev.dial.on('longpress', function() {
   console.log("LONG!");
@@ -78,19 +80,8 @@ escapephone.dev.rotary.on('multipress', function(spec) {
 
   process.emit('code');
 
-  switch (escapephone.state.mode) {
-    case '-':
-      process.emit('setmode', {from:escapephone.state.mode, to:''});
-      break;
-    case '*':
-      if (escapephone.state.sofar.length >= 3) {
-        process.emit('setmode', {from:escapephone.state.mode, to:''});
-        process.emit('clear_code');
-      }
-      break;
-    default:
-  }
 });
+
 escapephone.dev.rotary.on('buttonpress', function(spec) {
   escapephone.dev.rotary.emit('multipress', spec);
 });
@@ -100,185 +91,63 @@ process.on('code', function(spec) {
 
   console.log("CODE %j", {code:code, state:escapephone.state});
 
-  if (escapephone.state.sofar[0] === 0) {
-    process.emit('rotary_query', {rquery:escapephone.state.sofar.slice(1)});
-    return;
-  }
-
   switch (code) {
     case '1':
-      process.emit("mpc", {cmd:'play'});
+      process.emit("tts", {text:['number','1']});
+      console.log("Number 1");
       escapephone.state.sofar.shift();
       break;
-/*
-    case '2':
-      process.emit("volume", {volume:100});
-      process.emit("mpc", {cmd:'play'});
-      escapephone.state.sofar.shift();
-      break;
-*/
+
     case '2':
       process.emit("tts", {text:['number','2']});
-      process.emit("mpcq", {query:['little','bird,','little','bird']});
+      console.log("Number 2");
       escapephone.state.sofar.shift();
       break;
-/*
-    case '3':
-      process.emit("mpc", {cmd:'next'});
-      escapephone.state.sofar.shift();
-      break;
-    case '4':
-      process.emit("mpc", {cmd:'prev'});
-      escapephone.state.sofar.shift();
-      break;
-*/
+
     case '3':
       process.emit("tts", {text:['number','3']});
-      process.emit("mpcq", {query:['humpty','dumpty']});
+      console.log("Number 3");
       escapephone.state.sofar.shift();
       break;
+
     case '4':
       process.emit("tts", {text:['number','4']});
-      process.emit("mpcq", {query:['wiggle','tooth']});
+      console.log("Number 4");
       escapephone.state.sofar.shift();
       break;
+
     case '5':
       process.emit("tts", {text:['number','5']});
-      process.emit("mpcq", {query:['guapo']});
+      console.log("Number 5");
       escapephone.state.sofar.shift();
       break;
+
     case '6':
       process.emit("tts", {text:['number','6']});
-      process.emit("mpcq", {query:['belafonte','matilda']});
+      console.log("Number 6");
       escapephone.state.sofar.shift();
       break;
+
     case '7':
       process.emit("tts", {text:['number','7']});
-      process.emit("mpcq", {query:['susanna','tanyas']});
+      console.log("Number 7");
       escapephone.state.sofar.shift();
       break;
+
     case '8':
       process.emit("tts", {text:['number','8']});
-      process.emit("mpcq", {query:['puff']});
+      console.log("Number 8");
       escapephone.state.sofar.shift();
       break;
+
     case '9':
       process.emit("tts", {text:['number','9']});
-      process.emit("mpcq", {query:['lilly']});
+      console.log("Number 9");
       escapephone.state.sofar.shift();
       break;
-    case '-1':
-      process.emit('clear_code');
-      process.emit('setmode', {from:escapephone.state.mode, to:'*'});
-      escapephone.state.sofar.push("*");
-      break;
-    case '-2':
-      process.emit('clear_code');
-      process.emit('setmode', {from:escapephone.state.mode, to:'#'});
-      escapephone.state.sofar.push("#");
-      break;
-    case '-3':
-    case '-4':
-    case '-5':
-    case '-6':
-    case '-7':
-    case '-8':
-    case '-9':
-      process.emit('mpc', {cmd:['pause']});
-      process.emit('mike', {id:escapephone.state.sofar.pop()});
-      process.emit('clear_code');
-      break;
-    case '-0':
-      process.emit('setmode', {from:escapephone.state.mode, to:''});
-      process.emit('clear_code');
-      process.emit('clear_recs');
-      break;
-    case "*60":
-      process.emit('mpc', {cmd:['single', 'on']});
-      process.emit('audible_status');
-      break;
-    case "*80":
-      process.emit('mpc', {cmd:['single', 'off']});
-      process.emit('audible_status');
-      break;
-    case "*61":
-      process.emit('mpc', {cmd:['random', 'on']});
-      process.emit('audible_status');
-      break;
-    case "*81":
-      process.emit('mpc', {cmd:['random', 'off']});
-      process.emit('audible_status');
-      break;
-    case "*65":
-      process.emit('audible_trackid');
-      break;
-    case "*66":
-      process.emit('mpc', {cmd:['repeat', 'on']});
-      process.emit('audible_status');
-      break;
-    case "*86":
-      process.emit('mpc', {cmd:['repeat', 'off']});
-      process.emit('audible_status');
-      break;
-    case '*78':
-      process.emit('shutdown_request');
-      break;
-  }
+
 });
 
-process.on('rotary_query', function(spec) {
-  if (spec.rquery.length === 0) {
-    return;
-  }
-
-  spec.regex = spec.rquery.map(function(digit) { return escapephone.digits[digit]; }).join('');
-  console.error("RQUERY %j", spec);
-
-  var mpcq = escapephone.mods.cp.exec(['mpc_query', spec.regex].join(' '), function(code, out, err) {
-
-    if (out.length === 0) {
-      process.emit('effect', {name:'beep'});
-      return;
-    }
-
-    var lines = out.split(/\n/);
-    console.error("MPCQ %j", {code:code,out:out.slice(0,100),err:err,lines:lines.slice(0,10)});
-    if (lines.length === 2) {
-      process.emit('mpc', {cmd:['play',lines[0]]});
-      return;
-    }
-
-    //process.emit('effect', {name:'uhoh'});
-    //process.emit('tts', {text:[lines.length]});
-
-  });
-});
-
-process.on('clear_code', function(spec) {
-  escapephone.state.sofar = [];
-});
-
-process.on('clear_recs', function(spec) {
-  var timestamp =JSON.stringify(new Date()).slice(1,-2);
-
-  var cmd = [
-             'mkdir',
-             '-p',
-             [process.env.HOME,'tmp',timestamp].join('/'),
-             '&&',
-             'mv',
-             [process.env.HOME,'tmp','?.wav'].join('/'),
-             [process.env.HOME,'tmp',timestamp].join('/'),
-             '',
-             ].join(' ');
-  console.error("TRASH: %s", cmd);
-  var rm = escapephone.mods.cp.spawn('bash', ['-c',cmd]);
-  rm.stdout.pipe(process.stdout);
-  rm.stderr.pipe(process.stderr);
-  rm.on('exit', function() {
-    process.emit('effect', {name:'flush'});
-  });
-});
 
 process.on('setmode', function(spec) {
   var oldmode = escapephone.state.mode;
@@ -437,3 +306,4 @@ process.on('mpcq', function(spec) {
 });
 
 process.emit('tts', {text:['hello', 'world']});
+console.log("Escape Phone v0.0.2 Started...")
